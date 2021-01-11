@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Warehouse Wars</title>
+
+		<script src="lib/react.js"></script>
+		<script src="lib/react-dom.js"></script>
+		<script src="lib/babel.min.js"></script>
+		<script src="js/jquery-3.1.1.min.js"></script>
+		
+
+	<script type="text/javascript">
+	var stage = null;
+	var id = null;
+	function connect(){
+
+		var socket = new WebSocket("ws://cslinux.utm.utoronto.ca:10792");
+		console.log("ghjk");
+		socket.onmessage = function(evt) {
+			console.log("on message");
+			var data = JSON.parse(evt.data);
+			console.log(data);
+			if (data.type == 'newStage') {
+				stage = data.s;
+				id = data.ID;
+				setTheStage(stage, id);
+			}
+			if (data.type == 'position') {
+				stage = data.s;
+				UpdateTheStage(stage);
+			}
+			if (data.type == 'playerUpdate') {
+				stage.PLAYER_LIST = data.players;
+				setTheStage(stage, id);
+			}
+			if(data.type == 'death'){
+				alert("you lose");
+
+			}
+			if(data.type == 'win'){
+				time = data.time;
+
+			}
+		};
+
+		document.onkeydown = function(event) {		
+			var key;
+			switch (event.keyCode) {
+			case 68:	//d
+				key = JSON.stringify({type: 'keyPress', inputID:'right', state: true});
+				socket.send(key);
+				break;
+			case 83:	//s
+				key = JSON.stringify({type: 'keyPress', inputID:'down', state: true});
+				socket.send(key);
+				break;
+			case 65:	//a
+				key = JSON.stringify({type: 'keyPress', inputID:'left', state: true});
+				socket.send(key);
+				break;
+			case 87:	//w
+				key = JSON.stringify({type: 'keyPress', inputID:'up', state: true});
+				socket.send(key);
+				break;
+			}
+		}
+	}
+
+	function setTheStage(stage, id){
+		var s = "<table>";
+		//initialize matrix representation of arena
+		for (var x = 0; x < stage.drawBoard.length; x++) {
+			 s += "<tr>";
+			for(var y = 0; y < stage.drawBoard[x].length; y++) {
+				s += "<td id='" + x + "," + y + "' class='arena'> <img class= 'object' src =" + stage.drawBoard[x][y].icon+ " width = '30' height = '30'/></td>";
+			}
+			s += "</tr>"; 
+		}
+		s+="</table>";
+		document.getElementById("Arena").innerHTML=s;
+		//interval = setInterval(step, 1000);
+	}
+
+	function UpdateTheStage(stage){
+		var s = "<table>";
+		//initialize matrix representation of arena
+		for (var x = 0; x < stage.drawBoard.length; x++) {
+			s += "<tr>";
+			for(var y = 0; y < stage.drawBoard[x].length; y++) {
+				s += "<td id='" + x + "," + y + "' class='arena'> <img class= 'object' src =" + stage.drawBoard[x][y].icon+ " width = '30' height = '30'/></td>";
+			}
+			s += "</tr>"; 
+		}
+		s+="</table>";
+		document.getElementById("Arena").innerHTML=s;
+	}
+
+	function sendLogin(user, password){
+		$.ajax({
+			method: "GET",
+			url: "/wwmmo/login/"+user+"/"+password, 
+		}).done(function(data){
+			console.log("Got back:" + JSON.stringify(data));
+		});
+	}
+
+	function sendRegister(user, password){
+		$.ajax({
+			method: "POST",
+			url: "/wwmmo/register/"+user+"/"+password, 
+		}).done(function(data){
+			console.log("Got back:" + JSON.stringify(data));
+		});
+	}
+	
+	function sendUpdate(user, newPass, oldPass){
+		$.ajax({
+			method: "POST",
+			url: "/wwmmo/update/"+user+"/"+newPass+"/"+oldPass, 
+		}).done(function(data){
+			console.log("Got back:" + JSON.stringify(data));
+		});
+	}
+
+
+	</script>
+
+		<script type="text/babel">
+//----------------------------Buttons-------------------------------------------
+
+
+		class BackButton extends React.Component {
+			constructor(props) {
+				super(props);
+			}
+
+			render(props){
+				return (
+					<button onClick={this.props.clickHandler} > {this.props.name} </button>
+				);
+			}
+		}
+
+		class Crazy1Button extends React.Component {
+			constructor(props) {
+				super(props);
+			}
+			//I need to know what page I am
+			render(props){
+				return (
+					<button onClick={this.props.clickHandler} > {this.props.name} </button>
+				);
+			}
+		}
+
+		class Crazy2Button extends React.Component {
+			constructor(props) {
+				super(props);
+			}
+			//I need to know what page I am
+			render(props){
+				return (
+					<button onClick={this.props.clickHandler}> {this.props.name} </button>
+				);
+			}
+		}
+
+//--------------------------login page------------------------------------------
+
+		class LoginButton extends React.Component {
+			constructor(props) {
+				super(props);
+			}
+
+			render(props){
+				return (
+					<button onClick={this.props.clickHandler} > {this.props.name} </button>
+				);
+			}
+		}
+
+//-------------------------Register --------------------------------------------
+		class RegisterButton extends React.Component {
+			constructor(props) {
+				super(props);
+			}
+
+			render(props){
+				return (
+					<button onClick={this.props.clickHandler} > {this.props.name} </button>
+				);
+			}
+		}
+
+
+		class Registerformin extends React.Component {
+			constructor(props) {
+				super(props);
+			}
+
+			render(props){
+				return (
+					<button onClick={this.props.clickHandler} > {this.props.name} </button>
+				);
+			}
+		}
+
+//--------------------------account page ---------------------------------------
+		class UpdateButton extends React.Component {
+			constructor(props) {
+				super(props);
+			}
+
+			render(props){
+				return (
+					<button onClick={this.props.clickHandler} > {this.props.name} </button>
+				);
+			}
+		}
+
+
+//--------------------------main menu-------------------------------------------
+
+		class PlayButton extends React.Component {
+			constructor(props) {
+				super(props);
+			}
+
+			render(props){
+				return (
+					<button onClick={this.props.clickHandler} > {this.props.name} </button>
+				);
+			}
+		}
+
+
+		class QuitButton extends React.Component {
+			constructor(props) {
+				super(props);
+			}
+
+			render(props){
+				return (
+					<button onClick={this.props.clickHandler} > {this.props.name} </button>
+				);
+			}
+		}
+
+		class Lobby extends React.Component{
+			constructor(props){
+				super(props);
+			}
+
+			render(props){
+				var s = setTheStage();
+				return(s);
+			}
+		}
+
+//-----------------------------INDEX--------------------------------------------
+
+		class Index extends React.Component{
+
+			constructor(props) {
+					super(props);
+				this.state = {
+					page : "login", prev : "login",
+					login : false,
+					username : "", password: "",
+					password2 : ""
+				};
+
+				this.backButtonClickHandler = this.backButtonClickHandler.bind(this);
+				this.crazy1ButtonClickHandler = this.crazy1ButtonClickHandler.bind(this);
+				this.crazy2ButtonClickHandler = this.crazy2ButtonClickHandler.bind(this);
+
+				this.loginButtonClickHandler = this.loginButtonClickHandler.bind(this);
+				this.registerButtonClickHandler = this.registerButtonClickHandler.bind(this);
+				this.updateButtonClickHandler = this.updateButtonClickHandler.bind(this);
+
+				this.playButtonClickHandler = this.playButtonClickHandler.bind(this);
+				this.quitButtonClickHandler = this.quitButtonClickHandler.bind(this);
+
+
+				this.handleChange = this.handleChange.bind(this);
+				
+			}
+
+			//----------------button handlers---------------
+
+			backButtonClickHandler(event){
+				var e = event
+				console.log("back button message");
+				//switch pages accordingly
+				this.setState( (prevState, props) => {
+					return { page : prevState.prev, prev : prevState.page }
+				});
+
+			}
+
+			crazy1ButtonClickHandler(event){
+				var e = event;
+				console.log("switch button message");
+				//switch pages accordingly
+				this.setState( (prevState, props) => {
+					return { page : "register", prev : prevState.page }
+				});
+
+			}
+
+			crazy2ButtonClickHandler(event){
+				var e = event;
+				console.log("switch button message");
+				//switch pages accordingly
+				this.setState( (prevState, props) => {
+					return { page : "account", prev : prevState.page }
+				});
+
+			}
+
+			loginButtonClickHandler(event){
+				var e = event;
+				console.log("login button message");
+
+				console.log("como que nokkkkk"+ this.state.username + "_ _" + this.state.password);
+				sendLogin(this.state.username, this.state.password);
+				//sendLogin(this.state.username, this.state.password);
+				connect();
+				this.setState( (prevState, props) => {
+					return { page : "main", prev : prevState.page }
+				});
+			}
+
+			registerButtonClickHandler(event){
+				var e = event;
+				console.log("register button message");
+				//sendRegister(this.state.username, this.state.password);
+				this.setState( (prevState, props) => {
+					return { page : "login", prev : prevState.page }
+				});
+				
+			}
+
+			updateButtonClickHandler(event){
+				var e = event;
+				console.log("update button message");
+				//sendUpdate(this.state.username, this.state.password);
+				this.setState( (prevState, props) => {
+					return { page : "main", prev : prevState.page }
+				});
+
+			}
+
+			playButtonClickHandler(event){
+				var e = event;
+				console.log("play button message");
+				this.setState( (prevState, props) => {
+					return { page : "play", prev : prevState.page }
+				});
+
+			}
+
+			quitButtonClickHandler(event){
+				var e = event;
+				console.log("quit button message");
+				this.setState( (prevState, props) => {
+					return { page : "login", prev : prevState.page }
+				});
+
+			}
+
+			//----------------textbox handlers---------------
+
+			handleChange(e){
+				if(e.target.name == "username"){
+				this.setState({username : e.target.value});
+				}
+				else if(e.target.name == "password"){
+				this.setState({password : e.target.value});
+				}
+				else if(e.target.name == "password2"){
+				this.setState({password2 : e.target.value});
+				}
+			}
+		
+			handleData(data) {
+				let result = JSON.parse(data);
+			}
+			
+			//Render the different sections of the website
+			render(){
+				//Login
+				if(this.state.page == "login"){
+					return(
+						
+						<div style={{border:"1px solid black"}} > 
+							<h1>Login</h1>
+							<table>
+							<tbody>
+							<tr><th>Username:</th><td><textarea value={this.state.value} onChange={this.handleChange} name = "username"/></td></tr>
+							<tr><th>Password:</th><td><textarea value={this.state.value} onChange={this.handleChange} name = "password"/></td></tr>
+							</tbody>
+							</table>
+							<LoginButton clickHandler={this.loginButtonClickHandler} name="login" />
+							<Crazy1Button clickHandler={this.crazy1ButtonClickHandler} name="register" />
+						</div>
+					);
+				}
+
+				//register
+				else if(this.state.page == "register"){
+					return(
+						
+						<div style={{border:"1px solid black"}} >
+							<h1>Registration</h1>
+							<table>
+							<tbody>
+							<tr><th>Username:</th><td><textarea value={this.state.value} onChange={this.handleChange} name = "username"/></td></tr>
+							<tr><th>Password:</th><td><textarea value={this.state.value} onChange={this.handleChange} name = "password"/></td></tr>
+							<tr><th>Confirm Password:</th><td><textarea value={this.state.value} onChange={this.handleChange} name = "password2"/></td></tr>
+							</tbody>
+							</table>
+							<RegisterButton clickHandler={this.registerButtonClickHandler} name="register" />
+							<BackButton clickHandler={this.backButtonClickHandler} name="back" />
+						</div>
+					);
+				}
+				//main
+				else if(this.state.page == "main"){
+					return(
+						<div>
+							<h1>Main Menu</h1>
+							<PlayButton clickHandler={this.playButtonClickHandler} name="play" />
+							<Crazy2Button clickHandler={this.crazy2ButtonClickHandler} name="account" />
+							<QuitButton clickHandler={this.quitButtonClickHandler} name="quit" />
+						</div>
+					);
+				}
+				//account
+				else if(this.state.page == "account"){
+					return(
+						<div>
+							<h1>Account</h1>
+							<table>
+							<tbody>
+							<tr><th>Username:</th><td><textarea value={this.state.value} onChange={this.handleChange} name = "username"/></td></tr>
+							<tr><th>Password:</th><td><textarea value={this.state.value} onChange={this.handleChange} name = "password"/></td></tr>
+							<tr><th>Old Password:</th><td><textarea value={this.state.value} onChange={this.handleChange} name = "password2"/></td></tr>
+							</tbody>
+							</table>
+							<UpdateButton clickHandler={this.updateButtonClickHandler} name="register" />
+							<BackButton clickHandler={this.backButtonClickHandler} name="back" />
+						</div>
+					);
+				}
+				//play
+				else if(this.state.page == "play"){
+					return(
+						<div>
+							<h1>ATRAPA EL BURRO</h1>
+							<BackButton clickHandler={this.backButtonClickHandler} name="back" />
+							<Lobby/>
+						</div>
+					);
+				}
+			}
+		}
+
+		ReactDOM.render(<Index/>, document.getElementById('Index'));
+
+		</script>
+	</head>
+
+	<body>
+		<div id="Index"></div>
+		<div id="Arena"></div>
+		
+	</body>
+</html>

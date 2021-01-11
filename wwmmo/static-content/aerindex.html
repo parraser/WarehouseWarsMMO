@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Warehouse Wars</title>
+ 		
+		<script src="lib/react.js"></script>
+		<script src="lib/react-dom.js"></script>
+		<script src="lib/babel.min.js"></script>
+		<script src="js/jquery-3.1.1.min.js"></script>
+		<script src="js/wwmmo.js"></script>
+	
+	<script type="text/javascript">
+	var stage = null;
+	var id = null;
+	function connect(){
+
+		var socket = new WebSocket("ws://cslinux.utm.utoronto.ca:10792");
+		console.log("ghjk");
+		socket.onmessage = function(evt) {
+			console.log("on message");
+			var data = JSON.parse(evt.data);
+			console.log(data);
+			if (data.type == 'newStage') {
+				stage = data.s;
+				id = data.ID;
+				setTheStage(stage, id);
+			}
+			if (data.type == 'position') {
+				stage = data.s;
+				UpdateTheStage(stage);
+			}
+			if (data.type == 'playerUpdate') {
+				stage.PLAYER_LIST = data.players;
+				setTheStage(stage, id);
+			}
+		};
+
+		document.onkeydown = function(event) {		
+			var key;
+			switch (event.keyCode) {
+				case 68:	//d
+					key = JSON.stringify({type: 'keyPress', inputID:'right', state: true});
+					socket.send(key);
+					break;
+				case 83:	//s
+					key = JSON.stringify({type: 'keyPress', inputID:'down', state: true});
+					socket.send(key);
+					break;
+				case 65:	//a
+					key = JSON.stringify({type: 'keyPress', inputID:'left', state: true});
+					socket.send(key);
+					break;
+				case 87:	//w
+					key = JSON.stringify({type: 'keyPress', inputID:'up', state: true});
+					socket.send(key);
+					break;
+			}
+		}
+	}
+
+	function setTheStage(stage, id){
+		var s = "<table>";
+		//initialize matrix representation of arena
+		for (var x = 0; x < stage.drawBoard.length; x++) {
+			 s += "<tr>";
+			for(var y = 0; y < stage.drawBoard[x].length; y++) {
+				s += "<td id='" + x + "," + y + "' class='arena'> <img class= 'object' src =" + stage.drawBoard[x][y]+ " width = '30' height = '30'/></td>";
+			}
+			s += "</tr>"; 
+		}
+		s+="</table>";
+		document.getElementById("Arena").innerHTML=s;
+		//interval = setInterval(step, 1000);
+	}
+
+	function UpdateTheStage(stage){
+		var s = "<table>";
+		//initialize matrix representation of arena
+		for (var x = 0; x < stage.drawBoard.length; x++) {
+			s += "<tr>";
+			for(var y = 0; y < stage.drawBoard[x].length; y++) {
+				s += "<td id='" + x + "," + y + "' class='arena'> <img class= 'object' src =" + stage.drawBoard[x][y]+ " width = '30' height = '30'/></td>";
+			}
+			s += "</tr>"; 
+		}
+		s+="</table>";
+		document.getElementById("Arena").innerHTML=s;
+	}
+
+	function sendLogin(user, password){
+		console.log("sacalas panochas");
+		$.ajax({
+			method: "POST",
+			url: "/wwmmo/login/"+user+"/"+password, 
+			//data: JSON.stringify({username : user, password : password});
+		}).done(function(data){
+			console.log("Got back:" + JSON.stringify(data));
+		});
+	}
+
+	</script>
+
+ 		
+<script type="text/babel">
+		
+					
+			class LoginButton extends React.Component{
+			
+				constructor(props) {
+					super(props);
+				}
+				render(props){
+					return (
+						<button onClick={this.props.clickHandler} value={this.props.id} > {this.props.id} </button>
+					);
+				}
+			
+			}
+			
+			class LoginForm extends React.Component {
+				constructor(props) {
+					super(props);
+				}
+				render(props){
+					return (
+					<form>
+					<fieldset>
+					 <legend>Login</legend>
+
+					<table> 
+
+                                <tr>User:<td><input type="text" id="loginId" /></td></tr>
+                                <tr>Password:<td> <input type="password" id="userpass" /></td></tr>
+                            </table>
+					</fieldset>
+					</form>
+					);
+				
+				}
+					
+			}
+			
+			class Lobby extends React.Component{
+				constructor(props){
+					super(props);
+				}
+				render(props){
+				var s = setTheStage();
+					return(
+					s
+					);
+				}
+			}
+			
+			class RegisterForm extends React.Component{
+				constructor(props){
+					super(props);
+				}
+				render(props){
+					return(
+					<form method="reg">
+                    			<fieldset>
+                        		<legend>Create Account</legend>
+                        		<p> <label for="user">Username: </label>    <input type="text" id="regUser"></input> </p>
+                        		<p> <label for="password">Password: </label><input type="password" id="regPass"></input> </p>
+                        		<p> <label for="confirmPass">Confirm Password: </label><input type="password" id="confirmPass"></input> </p>
+
+                        		<p><input type="button" id="createAccountButton" value="Register" />
+					<input type="button" id="returnLoginButton" value="Back to login page" /></p>
+                    			</fieldset>
+                			</form> 
+					);
+				}
+			}
+			
+			class Index extends React.Component{
+			
+				constructor(props) {
+					super(props);
+					this.state = { 
+						login :  true,
+						register: false,
+						lobby: false,
+						game: false
+					}
+					this.loginButtonClickHandler = this.loginButtonClickHandler.bind(this);
+					this.registerButtonClickHandler = this.registerButtonClickHandler.bind(this);
+				}
+				loginButtonClickHandler(e){
+					console.log("antes");
+					console.log(event.target.value);
+					//sendLogin("sergio","passON");
+					console.log("despues");
+					connect();
+					
+					this.setState( 
+						{login : false,
+						register: false,
+						lobby: true,
+						game: false}
+					);
+				}
+				
+				registerButtonClickHandler(e){
+				
+					this.setState(
+						{login : false,
+						register: true,
+						lobby: false,
+						game: false}
+					);
+				}
+				
+				handleData(data) {
+				  let result = JSON.parse(data);
+				}
+				
+				render(){
+					if(this.state.login){
+					return (  
+						<div style={{border:"1px solid black"}} > 
+							<LoginForm/>
+							<LoginButton clickHandler={this.loginButtonClickHandler} id="Login" />
+							<LoginButton clickHandler={this.registerButtonClickHandler} id="Register"/>
+						</div>
+					);
+					}
+					else if (this.state.register){
+						return(<RegisterForm/>);
+					}
+					else if(this.state.lobby){
+						return(<Lobby/>)
+					}
+					else if(this.state.game){
+					
+					
+					}
+				}
+			}
+			
+			ReactDOM.render( <Index/>, document.getElementById("Login"));
+		</script>
+	</head>
+	<body>
+		<div id="Login"></div>
+		<div id="Arena"></div>
+	</body>
+</html>

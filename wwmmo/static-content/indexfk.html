@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<meta charset="UTF-8">
+		<Title>Warehouse Wars MMO</title>
+		<script src="/client/js/jquery-3.1.1.min.js"></script>
+		<script src="/client/js/wwmmo.js"></script>
+	</head>
+	
+	<script>
+	var socket = new WebSocket("ws://localhost:10498");
+	var stage = null;
+	var id = null;
+
+	socket.onmessage = function(evt) {
+		var data = JSON.parse(evt.data);
+		if (data.type == 'newStage') {
+			stage = data.s;
+			id = data.ID;
+			draw(stage, id);
+		}
+		if (data.type == 'position') {
+			stage.PLAYER_LIST = data.players;
+			stage.field = data.boxes;
+			draw(stage, id);
+		}
+		if (data.type == 'playerUpdate') {
+			stage.PLAYER_LIST = data.players;
+			draw(stage, id);
+		}
+	};
+
+	document.onkeydown = function(event) {		
+		var key;
+		switch (event.keyCode) {
+			case 68:	//d
+				key = JSON.stringify({type: 'keyPress', inputID:'right', state: true});
+				socket.send(key);
+				break;
+			case 83:	//s
+				key = JSON.stringify({type: 'keyPress', inputID:'down', state: true});
+				socket.send(key);
+				break;
+			case 65:	//a
+				key = JSON.stringify({type: 'keyPress', inputID:'left', state: true});
+				socket.send(key);
+				break;
+			case 87:	//w
+				key = JSON.stringify({type: 'keyPress', inputID:'up', state: true});
+				socket.send(key);
+				break;
+		}
+	}
+	
+	</script>
+
+	<body>
+		<canvas id="canvas" style="background-color: #9099A2;">Your browser doesn't support canvas.</canvas>
+	</body>
+</html>

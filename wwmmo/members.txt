@@ -1,0 +1,16 @@
+
+the restful api  is rest_server
+the web socket server is ww_server
+
+for some reason ww server acts weird in school computers, try putty or ssh
+
+
+members
+
+Brandon Daniel Fernandez: ferna800
+Sergio Parra : parraser
+
+
+Extra features:
+
+Mongo DB

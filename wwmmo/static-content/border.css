@@ -1,0 +1,67 @@
+#stage, .arena {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+.object {
+    width:30px;
+    height:30px;
+}
+
+
+
+body
+{
+	background: #FF0000;
+}
+
+h1
+{
+	color: #FFFFFF;
+	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	font-size: 40px;
+}
+
+input[type=button]
+{
+	background-color: #FFFFFF;
+	border: 2px solid #877002;
+	width: 200px;
+	height: 50px;
+	margin: 5px;
+	font-size: 20px;
+}
+
+input[type=button]:hover
+{
+	background-color: #00BFFF;
+	border: 2px solid #fceb99;
+	color: #ffffff;
+}
+
+#stage
+{
+	background-color: #ffffff;
+	margin: 1px;
+}
+
+#account
+{
+	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	color: #ffffff;
+	
+}
+
+h2
+{
+	margin: 0px 5px;
+}
+
+td
+{
+	text-align: center;
+	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	border-collapse: separate;
+	border-spacing: 100px 10px;
+}
+
